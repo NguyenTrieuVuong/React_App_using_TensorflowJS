@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/React_App_using_TensorflowJS/static/css/main.1dde3e37.css",
+    "main.js": "/React_App_using_TensorflowJS/static/js/main.8fa8b413.js",
+    "static/js/787.bc7d429a.chunk.js": "/React_App_using_TensorflowJS/static/js/787.bc7d429a.chunk.js",
+    "static/media/hey_sondn.mp3": "/React_App_using_TensorflowJS/static/media/hey_sondn.8c2f8e9b7d790cbebde1.mp3",
+    "index.html": "/React_App_using_TensorflowJS/index.html",
+    "main.1dde3e37.css.map": "/React_App_using_TensorflowJS/static/css/main.1dde3e37.css.map",
+    "main.8fa8b413.js.map": "/React_App_using_TensorflowJS/static/js/main.8fa8b413.js.map",
+    "787.bc7d429a.chunk.js.map": "/React_App_using_TensorflowJS/static/js/787.bc7d429a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1dde3e37.css",
+    "static/js/main.8fa8b413.js"
+  ]
+}
