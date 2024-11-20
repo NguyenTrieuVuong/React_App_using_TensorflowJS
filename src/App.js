@@ -120,20 +120,18 @@ function App() {
           console.log('Normal posture detected');
           break;
         case HEAD_LEFT_LABEL:
-          console.log('Head turned left detected');
-          khongduocquaycopsound.play();
-          break;
         case HEAD_RIGHT_LABEL:
-          console.log('Head turned right detected');
-          khongduocquaycopsound.play();
+          console.log('Head turned detected');
+          if (!khongduocquaycopsound.playing()) {
+            khongduocquaycopsound.play();
+          }
           break;
         case STANDING_UP_LABEL:
-          console.log('Standing up detected');
-          khongduocdichuyensound.play();
-          break;
         case ABSENT_LABEL:
-          console.log('Absent detected');
-          khongduocdichuyensound.play();
+          console.log('Standing or absent detected');
+          if (!khongduocdichuyensound.playing()) {
+            khongduocdichuyensound.play();
+          }
           break;
         default:
           console.log('Unknown behavior detected');
@@ -171,7 +169,9 @@ function App() {
         // Check for 'cell phone' detection and play alert sound
         objects.forEach(obj => {
           if (obj.class === 'cell phone') {
-            alertphonesound.play(); // Play the alert sound for cell phone
+            if (!alertphonesound.playing()) {
+              alertphonesound.play();
+            }
           }
         });
       }
