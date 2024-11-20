@@ -4,10 +4,26 @@ import * as mobilenet from '@tensorflow-models/mobilenet';
 import * as knnClassifier from '@tensorflow-models/knn-classifier';
 import * as cocossd from '@tensorflow-models/coco-ssd';
 import { initNotifications, notify } from '@mycv/f8-notification';
-import Webcam from "react-webcam";
+import { Howl } from 'howler';
 import './App.css';
+import alertphone from './assets/alertphone.mp3';
+import khongduocdichuyen from './assets/khongduocdichuyen.mp3';
+import khongduocquaycop from './assets/khongduocquaycop.mp3';
 
 tf.setBackend('webgl');
+
+// Define alert sounds
+const alertphonesound = new Howl({
+  src: [alertphone],
+});
+
+const khongduocdichuyensound = new Howl({
+  src: [khongduocdichuyen],
+});
+
+const khongduocquaycopsound = new Howl({
+  src: [khongduocquaycop],
+});
 
 const NORMAL_POSTURE_LABEL = 'normal_posture';
 const HEAD_LEFT_LABEL = 'head_left';
@@ -105,15 +121,19 @@ function App() {
           break;
         case HEAD_LEFT_LABEL:
           console.log('Head turned left detected');
+          khongduocquaycopsound.play();
           break;
         case HEAD_RIGHT_LABEL:
           console.log('Head turned right detected');
+          khongduocquaycopsound.play();
           break;
         case STANDING_UP_LABEL:
           console.log('Standing up detected');
+          khongduocdichuyensound.play();
           break;
         case ABSENT_LABEL:
           console.log('Absent detected');
+          khongduocdichuyensound.play();
           break;
         default:
           console.log('Unknown behavior detected');
@@ -147,6 +167,13 @@ function App() {
         setDetections(objects);
         const ctx = canvasRef.current.getContext("2d");
         drawRect(objects, ctx);
+
+        // Check for 'cell phone' detection and play alert sound
+        objects.forEach(obj => {
+          if (obj.class === 'cell phone') {
+            alertphonesound.play(); // Play the alert sound for cell phone
+          }
+        });
       }
     }, 500); // Run every 500ms
   };
