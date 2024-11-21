@@ -171,7 +171,28 @@ function App() {
 
     if (result.confidences[result.label] > DETECTION_CONFIDENCE) {
       setCurrentBehavior(result.label);
-      console.log(`Detected: ${result.label}`);
+  
+      switch (result.label) {
+        case HEAD_LEFT_LABEL:
+        case HEAD_RIGHT_LABEL:
+          if (!khongduocquaycopsound.playing()) {
+            khongduocquaycopsound.play();
+          }
+          console.log('Head turned detected');
+          break;
+  
+        case STANDING_UP_LABEL:
+        case ABSENT_LABEL:
+          if (!khongduocdichuyensound.playing()) {
+            khongduocdichuyensound.play();
+          }
+          console.log('Standing up or absent detected');
+          break;
+  
+        default:
+          console.log(`Detected: ${result.label}`);
+          break;
+      }
     }
 
     requestAnimationFrame(run);
