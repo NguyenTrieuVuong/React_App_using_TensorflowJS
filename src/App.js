@@ -9,6 +9,7 @@ import './App.css';
 import alertphone from './assets/alertphone.mp3';
 import khongduocdichuyen from './assets/khongduocdichuyen.mp3';
 import khongduocquaycop from './assets/khongduocquaycop.mp3';
+import hetthoigianlambai from './assets/hetthoigianlambai.mp3';
 
 tf.setBackend('webgl');
 
@@ -23,6 +24,10 @@ const khongduocdichuyensound = new Howl({
 
 const khongduocquaycopsound = new Howl({
   src: [khongduocquaycop],
+});
+
+const hetthoigianlambaisound = new Howl({
+  src: [hetthoigianlambai],
 });
 
 const NORMAL_POSTURE_LABEL = 'normal_posture';
@@ -42,6 +47,9 @@ function App() {
   const cocoModel = useRef(); // COCO-SSD model reference
   const [currentBehavior, setCurrentBehavior] = useState('');
   const [detections, setDetections] = useState([]);
+  const [testTime, setTestTime] = useState(1); // Default test time in minutes
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [isTesting, setIsTesting] = useState(false);
 
   const init = async () => {
     console.log('Initializing...');
@@ -198,6 +206,28 @@ function App() {
     });
   };
 
+  const startTest = () => {
+    setTimeRemaining(testTime * 60); // Convert minutes to seconds
+    setIsTesting(true);
+
+    const timer = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIsTesting(false);
+          alert('Test is over!');
+          if (!hetthoigianlambaisound.playing()) {
+            hetthoigianlambaisound.play();
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    run(); // Start the behavior detection loop
+  };
+
   const sleep = (ms = 0) => {
     return new Promise(resolve => setTimeout(resolve, ms));
   };
@@ -206,35 +236,59 @@ function App() {
     init();
 
     // Cleanup
-    return () => {};
+    return () => { };
   }, []);
 
   return (
-    <div className={`main ${currentBehavior}`}>
-      <video
-        ref={video}
-        className="video"
-        autoPlay
-      />
-      <canvas
-        ref={canvasRef}
-        className="canvas"
-        style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          zIndex: 8,
-        }}
-      />
-      <div className="control">
-        <button className='btn' onClick={() => train(NORMAL_POSTURE_LABEL)}>Train Normal Posture</button>
-        <button className='btn' onClick={() => train(HEAD_LEFT_LABEL)}>Train Head Turned Left</button>
-        <button className='btn' onClick={() => train(HEAD_RIGHT_LABEL)}>Train Head Turned Right</button>
-        <button className='btn' onClick={() => train(STANDING_UP_LABEL)}>Train Standing Up</button>
-        <button className='btn' onClick={() => train(ABSENT_LABEL)}>Train Absent</button>
-        <button className='btn' onClick={() => run()}>Run</button>
+    <div className="main">
+      {/* Video and Canvas Section */}
+      <div className="video-container">
+        <video
+          ref={video}
+          className="video"
+          autoPlay
+        />
+        <canvas
+          ref={canvasRef}
+          className="canvas"
+        />
       </div>
 
+      {/* Controls Section */}
+      <div className="control">
+        {/* Timer and Duration Settings */}
+        <div className="input-group">
+          <label htmlFor="test-duration">Test Duration (minutes):</label>
+          <input
+            id="test-duration"
+            type="number"
+            min="1"
+            value={testTime}
+            onChange={e => setTestTime(Number(e.target.value))}
+            disabled={isTesting}
+            style={{ width: '60px', textAlign: 'center', fontSize: '1.2rem' }}
+          />
+        </div>
+        <button className="btn" onClick={startTest} disabled={isTesting}>
+          Start Test
+        </button>
+
+        {/* Timer Display */}
+        <div className="timer">
+          Time Remaining: {`${Math.floor(timeRemaining / 60)}:${String(timeRemaining % 60).padStart(2, '0')}`}
+        </div>
+
+        {/* Training Buttons */}
+        <div className="control-row">
+          <button className="btn" onClick={() => train(NORMAL_POSTURE_LABEL)}>Train Normal Posture</button>
+          <button className="btn" onClick={() => train(HEAD_LEFT_LABEL)}>Train Head Turned Left</button>
+          <button className="btn" onClick={() => train(HEAD_RIGHT_LABEL)}>Train Head Turned Right</button>
+          <button className="btn" onClick={() => train(STANDING_UP_LABEL)}>Train Standing Up</button>
+          <button className="btn" onClick={() => train(ABSENT_LABEL)}>Train Absent</button>
+        </div>
+      </div>
+
+      {/* Status Section */}
       <div className="status">
         <h2>Current Behavior: {currentBehavior}</h2>
         <h3>Object Detections:</h3>
@@ -246,6 +300,7 @@ function App() {
       </div>
     </div>
   );
+
 }
 
 export default App;
