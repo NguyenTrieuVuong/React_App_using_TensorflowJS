@@ -150,7 +150,7 @@ function App() {
   };
 
   const loadModel = async () => {
-    const response = await fetch('./public/model.json');
+    const response = await fetch('./model.json');
     const json = await response.json();
     const dataset = Object.fromEntries(
       Object.entries(json).map(([label, data]) => [label, tf.tensor(data)])
