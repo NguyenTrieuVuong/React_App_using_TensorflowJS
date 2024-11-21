@@ -4,6 +4,7 @@ import * as mobilenet from '@tensorflow-models/mobilenet';
 import * as knnClassifier from '@tensorflow-models/knn-classifier';
 import * as cocossd from '@tensorflow-models/coco-ssd';
 import { initNotifications, notify } from '@mycv/f8-notification';
+import { saveAs } from 'file-saver';
 import { Howl } from 'howler';
 import './App.css';
 import alertphone from './assets/alertphone.mp3';
@@ -50,6 +51,8 @@ function App() {
   const [testTime, setTestTime] = useState(1); // Default test time in minutes
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isTesting, setIsTesting] = useState(false);
+  const [isTraining, setIsTraining] = useState(false);
+  const [trainedModel, setTrainedModel] = useState(null);
 
   const init = async () => {
     console.log('Initializing...');
@@ -59,6 +62,7 @@ function App() {
 
     classifier.current = knnClassifier.create();
     mobilenetModule.current = await mobilenet.load();
+    console.log('MobileNet loaded.');
     cocoModel.current = await cocossd.load(); // Load COCO-SSD model
 
     console.log('Setup complete.');
@@ -92,62 +96,88 @@ function App() {
     });
   };
 
-  const train = async label => {
-    console.log(`[ ${label} ] is training...`);
-    for (let i = 0; i < TRAINING_TIMES; ++i) {
-      console.log(`Progress ${(i + 1) / TRAINING_TIMES * 100}%`);
-      await training(label);
-    }
-    console.log(`[ ${label} ] training complete.`);
-  };
+  const captureFrame = async (label, index) => {
+    const canvas = document.createElement('canvas');
+    const videoElement = video.current;
+    canvas.width = videoElement.videoWidth;
+    canvas.height = videoElement.videoHeight;
 
-  const training = label => {
-    return new Promise(async resolve => {
-      const embedding = mobilenetModule.current.infer(
-        video.current,
-        true
-      );
-      classifier.current.addExample(embedding, label);
-      await sleep(100);
-      resolve();
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+    // Convert canvas to Blob and save as image
+    canvas.toBlob((blob) => {
+      saveAs(blob, `${index}.png`);
     });
   };
 
-  const run = async () => {
-    const embedding = mobilenetModule.current.infer(
-      video.current,
-      true
+  const train = async (label) => {
+    setIsTraining(true);
+    console.log(`[ ${label} ] training started...`);
+    for (let i = 0; i < TRAINING_TIMES; i++) {
+      console.log(`Training progress: ${((i + 1) / TRAINING_TIMES) * 100}%`);
+      await captureFrame(label, i);
+
+      const embedding = mobilenetModule.current.infer(video.current, true);
+      classifier.current.addExample(embedding, label);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    console.log(`[ ${label} ] training complete.`);
+    setIsTraining(false);
+  };
+
+  // const training = label => {
+  //   return new Promise(async resolve => {
+  //     const embedding = mobilenetModule.current.infer(
+  //       video.current,
+  //       true
+  //     );
+  //     classifier.current.addExample(embedding, label);
+  //     await sleep(100);
+  //     resolve();
+  //   });
+  // };
+
+  const saveModel = async () => {
+    const dataset = classifier.current.getClassifierDataset();
+    const datasetObj = Object.fromEntries(
+      Object.entries(dataset).map(([label, data]) => [label, data.arraySync()])
     );
-    const result = await classifier.current.predictClass(embedding);
+    const blob = new Blob([JSON.stringify(datasetObj)], { type: 'application/json' });
+    saveAs(blob, 'model.json');
+    alert('Model saved as model.json');
+  };
+
+  const loadModel = async () => {
+    const response = await fetch('./assets/model.json');
+    const json = await response.json();
+    const dataset = Object.fromEntries(
+      Object.entries(json).map(([label, data]) => [label, tf.tensor(data)])
+    );
+    classifier.current.setClassifierDataset(dataset);
+    setTrainedModel(classifier.current);
+    console.log('Model loaded successfully.');
+  };
+
+  const run = async () => {
+    if (!trainedModel) {
+      alert('Please train and load the model first!');
+      return;
+    }
+
+    const embedding = mobilenetModule.current.infer(video.current, true);
+    const result = await trainedModel.predictClass(embedding);
 
     if (result.confidences[result.label] > DETECTION_CONFIDENCE) {
       setCurrentBehavior(result.label);
-
-      switch (result.label) {
-        case NORMAL_POSTURE_LABEL:
-          console.log('Normal posture detected');
-          break;
-        case HEAD_LEFT_LABEL:
-        case HEAD_RIGHT_LABEL:
-          console.log('Head turned detected');
-          if (!khongduocquaycopsound.playing()) {
-            khongduocquaycopsound.play();
-          }
-          break;
-        case STANDING_UP_LABEL:
-        case ABSENT_LABEL:
-          console.log('Standing or absent detected');
-          if (!khongduocdichuyensound.playing()) {
-            khongduocdichuyensound.play();
-          }
-          break;
-        default:
-          console.log('Unknown behavior detected');
-      }
+      console.log(`Detected: ${result.label}`);
     }
 
-    await sleep(200); // Delay between predictions
-    run();
+    requestAnimationFrame(run);
+
+    // await sleep(200); // Delay between predictions
+    // run();
   };
 
   const runObjectDetection = () => {
@@ -215,10 +245,10 @@ function App() {
         if (prev <= 1) {
           clearInterval(timer);
           setIsTesting(false);
-          alert('Test is over!');
           if (!hetthoigianlambaisound.playing()) {
             hetthoigianlambaisound.play();
           }
+          alert('Test is over!');
           return 0;
         }
         return prev - 1;
@@ -280,11 +310,28 @@ function App() {
 
         {/* Training Buttons */}
         <div className="control-row">
-          <button className="btn" onClick={() => train(NORMAL_POSTURE_LABEL)}>Train Normal Posture</button>
-          <button className="btn" onClick={() => train(HEAD_LEFT_LABEL)}>Train Head Turned Left</button>
-          <button className="btn" onClick={() => train(HEAD_RIGHT_LABEL)}>Train Head Turned Right</button>
-          <button className="btn" onClick={() => train(STANDING_UP_LABEL)}>Train Standing Up</button>
-          <button className="btn" onClick={() => train(ABSENT_LABEL)}>Train Absent</button>
+          <button className="btn" onClick={() => train(NORMAL_POSTURE_LABEL)} disabled={isTraining}>
+            Train Normal Posture
+          </button>
+          <button className="btn" onClick={() => train(HEAD_LEFT_LABEL)} disabled={isTraining}>
+            Train Head Turned Left
+          </button>
+          <button className="btn" onClick={() => train(HEAD_RIGHT_LABEL)} disabled={isTraining}>
+            Train Head Turned Right
+          </button>
+          <button className="btn" onClick={() => train(STANDING_UP_LABEL)} disabled={isTraining}>
+            Train Standing Up
+          </button>
+          <button className="btn" onClick={() => train(ABSENT_LABEL)} disabled={isTraining}>
+            Train Absent
+          </button>
+          <button className="btn" onClick={saveModel} disabled={isTraining}>
+            Save Model
+          </button>
+          <button className="btn" onClick={loadModel}>
+            Load Model
+          </button>
+          <button className="btn" onClick={run}>Run</button>
         </div>
       </div>
 
