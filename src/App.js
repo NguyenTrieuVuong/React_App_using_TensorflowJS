@@ -127,18 +127,6 @@ function App() {
     setIsTraining(false);
   };
 
-  // const training = label => {
-  //   return new Promise(async resolve => {
-  //     const embedding = mobilenetModule.current.infer(
-  //       video.current,
-  //       true
-  //     );
-  //     classifier.current.addExample(embedding, label);
-  //     await sleep(100);
-  //     resolve();
-  //   });
-  // };
-
   const saveModel = async () => {
     const dataset = classifier.current.getClassifierDataset();
     const datasetObj = Object.fromEntries(
@@ -196,9 +184,6 @@ function App() {
     }
 
     requestAnimationFrame(run);
-
-    // await sleep(200); // Delay between predictions
-    // run();
   };
 
   const runObjectDetection = () => {
@@ -260,6 +245,19 @@ function App() {
   const startTest = () => {
     setTimeRemaining(testTime * 60); // Convert minutes to seconds
     setIsTesting(true);
+
+    try {
+      // Load the model
+      loadModel();
+  
+      // Start behavior detection
+      run();
+    } catch (error) {
+      console.error("Error during Start Test:", error);
+      alert("Failed to start the test. Please ensure the model is loaded and ready.");
+      setIsTesting(false);
+      return;
+    }
 
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
@@ -330,6 +328,7 @@ function App() {
         </div>
 
         {/* Training Buttons */}
+        {/*
         <div className="control-row">
           <button className="btn" onClick={() => train(NORMAL_POSTURE_LABEL)} disabled={isTraining}>
             Train Normal Posture
@@ -354,6 +353,7 @@ function App() {
           </button>
           <button className="btn" onClick={run}>Run</button>
         </div>
+        */}
       </div>
 
       {/* Status Section */}
