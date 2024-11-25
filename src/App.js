@@ -243,13 +243,12 @@ function App() {
   };
 
   const startTest = () => {
+    // Load the model
+    loadModel();
     setTimeRemaining(testTime * 60); // Convert minutes to seconds
     setIsTesting(true);
 
     try {
-      // Load the model
-      loadModel();
-  
       // Start behavior detection
       run();
     } catch (error) {
