@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/React_App_using_TensorflowJS/static/css/main.9813f914.css",
-    "main.js": "/React_App_using_TensorflowJS/static/js/main.dfa39686.js",
+    "main.js": "/React_App_using_TensorflowJS/static/js/main.8c4b6dad.js",
     "static/js/787.bc7d429a.chunk.js": "/React_App_using_TensorflowJS/static/js/787.bc7d429a.chunk.js",
     "static/media/hetthoigianlambai.mp3": "/React_App_using_TensorflowJS/static/media/hetthoigianlambai.af50a272d31a5dce5df4.mp3",
     "static/media/khongduocdichuyen.mp3": "/React_App_using_TensorflowJS/static/media/khongduocdichuyen.b1af23620db52cd5f61f.mp3",
@@ -10,11 +10,11 @@
     "static/media/khongduocquaycop.mp3": "/React_App_using_TensorflowJS/static/media/khongduocquaycop.308c58dcf03c681f4f87.mp3",
     "index.html": "/React_App_using_TensorflowJS/index.html",
     "main.9813f914.css.map": "/React_App_using_TensorflowJS/static/css/main.9813f914.css.map",
-    "main.dfa39686.js.map": "/React_App_using_TensorflowJS/static/js/main.dfa39686.js.map",
+    "main.8c4b6dad.js.map": "/React_App_using_TensorflowJS/static/js/main.8c4b6dad.js.map",
     "787.bc7d429a.chunk.js.map": "/React_App_using_TensorflowJS/static/js/787.bc7d429a.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.9813f914.css",
-    "static/js/main.dfa39686.js"
+    "static/js/main.8c4b6dad.js"
   ]
 }
