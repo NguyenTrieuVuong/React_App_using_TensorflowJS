@@ -72,6 +72,7 @@ function App() {
 
     // Start COCO-SSD object detection
     runObjectDetection();
+    loadModel();
   };
 
   const setupCamera = () => {
