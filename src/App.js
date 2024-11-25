@@ -155,7 +155,6 @@ function App() {
   };
 
   const run = async () => {
-    // console.log(isTesting);
     // if (!isTesting) {
     //   console.log('Testing stopped.');
     //   return; // Stop the loop if testing is no longer active
@@ -259,7 +258,6 @@ function App() {
     loadModel();
     setTimeRemaining(testTime * 60); // Convert minutes to seconds
     setIsTesting(true);
-    console.log(isTesting);
     if (!batdauthoigianlambaisound.playing()) {
       batdauthoigianlambaisound.play();
     }
@@ -329,11 +327,11 @@ function App() {
             min="1"
             value={testTime}
             onChange={e => setTestTime(Number(e.target.value))}
-            
+            disabled={isTesting}
             style={{ width: '60px', textAlign: 'center', fontSize: '1.2rem' }}
           />
         </div>
-        <button className="btn" onClick={startTest} >
+        <button className="btn" onClick={startTest} disabled={isTesting}>
           Start Test
         </button>
 
