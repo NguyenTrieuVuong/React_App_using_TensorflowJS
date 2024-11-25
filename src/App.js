@@ -155,7 +155,7 @@ function App() {
   };
 
   const run = async () => {
-    console.log(isTesting);
+    // console.log(isTesting);
     // if (!isTesting) {
     //   console.log('Testing stopped.');
     //   return; // Stop the loop if testing is no longer active
@@ -259,18 +259,18 @@ function App() {
     loadModel();
     setTimeRemaining(testTime * 60); // Convert minutes to seconds
     setIsTesting(true);
+    console.log(isTesting);
     if (!batdauthoigianlambaisound.playing()) {
       batdauthoigianlambaisound.play();
     }
 
     try {
-      setIsTesting(true);
       // Start behavior detection
       run();
     } catch (error) {
       console.error("Error during Start Test:", error);
       alert("Failed to start the test. Please ensure the model is loaded and ready.");
-      // setIsTesting(false);
+      setIsTesting(false);
       return;
     }
 
@@ -278,7 +278,7 @@ function App() {
       setTimeRemaining(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          // setIsTesting(false);
+          setIsTesting(false);
           if (!hetthoigianlambaisound.playing()) {
             hetthoigianlambaisound.play();
           }
