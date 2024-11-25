@@ -264,12 +264,13 @@ function App() {
     }
 
     try {
+      setIsTesting(true);
       // Start behavior detection
       run();
     } catch (error) {
       console.error("Error during Start Test:", error);
       alert("Failed to start the test. Please ensure the model is loaded and ready.");
-      setIsTesting(false);
+      // setIsTesting(false);
       return;
     }
 
@@ -277,7 +278,7 @@ function App() {
       setTimeRemaining(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          setIsTesting(false);
+          // setIsTesting(false);
           if (!hetthoigianlambaisound.playing()) {
             hetthoigianlambaisound.play();
           }
