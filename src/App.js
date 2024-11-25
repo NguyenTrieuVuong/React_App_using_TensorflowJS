@@ -149,10 +149,10 @@ function App() {
   };
 
   const run = async () => {
-    if (!trainedModel) {
-      alert('Please train and load the model first!');
-      return;
-    }
+    // if (!trainedModel) {
+    //   alert('Please train and load the model first!');
+    //   return;
+    // }
 
     const embedding = mobilenetModule.current.infer(video.current, true);
     const result = await trainedModel.predictClass(embedding);
@@ -267,7 +267,7 @@ function App() {
           if (!hetthoigianlambaisound.playing()) {
             hetthoigianlambaisound.play();
           }
-          alert('Test is over!');
+          // alert('Test is over!');
           return 0;
         }
         return prev - 1;
