@@ -155,10 +155,10 @@ function App() {
   };
 
   const run = async () => {
-    if (!isTesting) {
-      console.log('Testing stopped.');
-      return; // Stop the loop if testing is no longer active
-    }
+    // if (!isTesting) {
+    //   console.log('Testing stopped.');
+    //   return; // Stop the loop if testing is no longer active
+    // }
 
     // if (!trainedModel) {
     //   alert('Please train and load the model first!');
