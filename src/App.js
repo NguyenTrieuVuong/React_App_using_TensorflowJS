@@ -257,20 +257,23 @@ function App() {
     // Load the model
     loadModel();
     setTimeRemaining(testTime * 60); // Convert minutes to seconds
+    console.log(isTesting);
     setIsTesting(true);
     if (!batdauthoigianlambaisound.playing()) {
       batdauthoigianlambaisound.play();
     }
+    
+    console.log(isTesting);
 
-    try {
-      // Start behavior detection
-      run();
-    } catch (error) {
-      console.error("Error during Start Test:", error);
-      alert("Failed to start the test. Please ensure the model is loaded and ready.");
-      setIsTesting(false);
-      return;
-    }
+    // try {
+    //   // Start behavior detection
+    //   run();
+    // } catch (error) {
+    //   console.error("Error during Start Test:", error);
+    //   alert("Failed to start the test. Please ensure the model is loaded and ready.");
+    //   setIsTesting(false);
+    //   return;
+    // }
 
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
