@@ -11,6 +11,7 @@ import alertphone from './assets/alertphone.mp3';
 import khongduocdichuyen from './assets/khongduocdichuyen.mp3';
 import khongduocquaycop from './assets/khongduocquaycop.mp3';
 import hetthoigianlambai from './assets/hetthoigianlambai.mp3';
+import batdauthoigianlambai from './assets/batdauthoigianlambai.mp3';
 
 tf.setBackend('webgl');
 
@@ -29,6 +30,10 @@ const khongduocquaycopsound = new Howl({
 
 const hetthoigianlambaisound = new Howl({
   src: [hetthoigianlambai],
+});
+
+const batdauthoigianlambaisound = new Howl({
+  src: [batdauthoigianlambai],
 });
 
 const NORMAL_POSTURE_LABEL = 'normal_posture';
@@ -150,6 +155,11 @@ function App() {
   };
 
   const run = async () => {
+    if (!isTesting) {
+      console.log('Testing stopped.');
+      return; // Stop the loop if testing is no longer active
+    }
+
     // if (!trainedModel) {
     //   alert('Please train and load the model first!');
     //   return;
@@ -248,6 +258,9 @@ function App() {
     loadModel();
     setTimeRemaining(testTime * 60); // Convert minutes to seconds
     setIsTesting(true);
+    if (!batdauthoigianlambaisound.playing()) {
+      batdauthoigianlambaisound.play();
+    }
 
     try {
       // Start behavior detection
@@ -274,7 +287,7 @@ function App() {
       });
     }, 1000);
 
-    run(); // Start the behavior detection loop
+    // run(); // Start the behavior detection loop
   };
 
   const sleep = (ms = 0) => {
