@@ -287,7 +287,7 @@ function App() {
       });
     }, 1000);
 
-    // run(); // Start the behavior detection loop
+    run(); // Start the behavior detection loop
   };
 
   const sleep = (ms = 0) => {
